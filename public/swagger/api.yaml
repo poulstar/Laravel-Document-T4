@@ -1,0 +1,520 @@
+openapi: 3.0.3
+info:
+  title: Swagger Poulstar Social Media - OpenAPI 3.0
+  description: for learn swagger and yaml
+  version: 1.0.0
+tags:
+  - name: User
+    description: Everything about your Users
+  - name: Post
+    description: Everything about your Posts
+  - name: Comment
+    description: Everything about your Comments
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: "Authorization: Bearer <token>"
+      Authorization: Bearer <token>
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    # ApiResponse
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: "##default"
+    # Login
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+          description: phone or email
+        password:
+          type: password
+          format: password
+        grant_type:
+          type: string
+          enum: ["password"]
+          default: "password"
+        client_id:
+          type: integer
+          enum: [1]
+          default: 1
+        client_secret:
+          type: string
+          enum: ["PpYE2tplIoNkuwAU5T7mLcL7a1dBi6zdWt14iXjR"]
+          default: "PpYE2tplIoNkuwAU5T7mLcL7a1dBi6zdWt14iXjR"
+    #Register
+    Register:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: email
+        password:
+          type: password
+          format: password
+        avatar:
+          type: string
+          format: binary
+    #َUpdate Profile
+    UpdateProfile:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: email
+        password:
+          type: password
+          format: password
+        avatar:
+          type: string
+          format: binary
+    #Create User By Admin
+    CreateUser:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: email
+        password:
+          type: password
+          format: password
+        avatar:
+          type: string
+          format: binary
+        role:
+          type: string
+          enum: ["user", "admin"]
+          default: "user"
+    #Update User By Admin
+    UpdateUser:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: email
+        password:
+          type: password
+          format: password
+        avatar:
+          type: string
+          format: binary
+        role:
+          type: string
+          enum: ["user", "admin"]
+    # Create Post By User
+    CreatePost:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+          format: binary
+        latitude:
+          type: number
+        longitude:
+          type: number
+    # Update Post By User
+    UpdatePost:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+          format: binary
+        latitude:
+          type: number
+        longitude:
+          type: number
+paths:
+  /api/get-verify-code/{phone}:
+    get:
+      tags:
+        - User
+      summery: get login code
+      description: get code for login
+      parameters:
+        - name: phone
+          in: path
+          description: Phone Number
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /oauth/token:
+    post:
+      tags:
+        - User
+      summery: Login user
+      description: Login User Oauth
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Login"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/register:
+    post:
+      tags:
+        - User
+      summery: Create a new user
+      description: create a normal user for client
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Register"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/user/profile:
+    get:
+      tags:
+        - User
+      summery: get profile
+      description: get user profile after login
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/update-my-profile/{user}:
+    post:
+      tags:
+        - User
+      summery: Update Profile
+      description: Update Your Profile
+      parameters:
+        - name: user
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdateProfile"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/all-users?page={page}&perPage={perPage}&filter={filter}:
+    get:
+      tags:
+        - User
+      summery: get all user
+      description: All User for admin
+      parameters:
+        - name: page
+          in: path
+          description: page number for paginate
+          schema:
+            type: integer
+          allowEmptyValue: true
+        - name: perPage
+          in: path
+          description: how many user in a page
+          schema:
+            type: string
+          allowEmptyValue: true
+        - name: filter
+          in: path
+          description: write your username to find it
+          schema:
+            type: string
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/create-user-by-admin:
+    post:
+      tags:
+        - User
+      summery: Create a new user by admin
+      description: admin can be add new user for app
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateUser"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/update-user-by-admin/{user}:
+    post:
+      tags:
+        - User
+      summery: Update User By Admin
+      description: Update Your any user by admin
+      parameters:
+        - name: user
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdateUser"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/delete-user-by-admin/{user}:
+    delete:
+      tags:
+        - User
+      summery: delete any user
+      description: admin can be deleted any user
+      parameters:
+        - name: user
+          in: path
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+          required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/all-posts-for-dashboard?page={page}:
+    get:
+      tags:
+        - Post
+      summery: get all post
+      description: get all post ant top post for dashboard
+      parameters:
+        - name: page
+          in: path
+          description: page number for pagination
+          schema:
+            type: integer
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/posts/{post}/like:
+    get:
+      tags:
+        - Post
+      summery: like post
+      description: user can like or dislike post
+      parameters:
+        - name: post
+          in: path
+          description: Post ID
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/view-post/{post}:
+    get:
+      tags:
+        - Post
+      summery: view post detail
+      description: user can see post detail
+      parameters:
+        - name: post
+          in: path
+          description: Post ID
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/my-posts?page={page}:
+    get:
+      tags:
+        - Post
+      summery: get all post
+      description: get my posts data
+      parameters:
+        - name: page
+          in: path
+          description: page number for pagination
+          schema:
+            type: integer
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/create-post:
+    post:
+      tags:
+        - Post
+      summery: Create a new Post
+      description: User can be add new post for app
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreatePost"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/update-my-post/{post}:
+    post:
+      tags:
+        - Post
+      summery: Update Post
+      description: Update my post
+      parameters:
+        - name: post
+          in: path
+          description: Post ID
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdatePost"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
+  /api/delete-my-post/{post}:
+    delete:
+      tags:
+        - Post
+      summery: delete my Post
+      description: User can be deleted own post
+      parameters:
+        - name: post
+          in: path
+          description: Post ID
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+      security:
+        - bearerAuth: []
