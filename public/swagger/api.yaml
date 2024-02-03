@@ -143,7 +143,6 @@ components:
           type: number
     # Update Post By User
     UpdatePost:
-    UpdatePost:
       type: object
       properties:
         title:
