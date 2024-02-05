@@ -9,6 +9,10 @@ php artisan make:controller CommentController --api
 Route::apiResource('comments', CommentController::class);
 ```
 ###### ابتدا Route را نوشته و بعد :: باید نوع مسیر را apiResource بگذاریم. در داخل تابع جایگاه اول آدرس URL پایه این مسیر است و پارامتر دوم controller ی است که می خواهیم در صورت صدا شدن به آن ارجاع داده شود.
+###### برای اینکه CommentController شناخته شود، آن را use می کنیم.
+```bash
+use App\Http\Controllers\CommentController;
+```
 ###### حال برویم سراغ CommentController تا کمی درباره آن صحبت کنیم. وقتی شما دستور ساخت controller را با --api می زنید، controller با ساختار زیر ساخته می شود.
 ```bash
 <?php
